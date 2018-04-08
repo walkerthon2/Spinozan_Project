@@ -42,7 +42,7 @@ LBA_Fit <- function(params, pData, trialNum) {
   }
   
   NLL = -sum(log(likelihood), na.rm = TRUE)
-  print(NLL)
+  # print(NLL)
   return(NLL)
   
 }

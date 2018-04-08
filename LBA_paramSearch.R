@@ -10,7 +10,7 @@ source('readData.R', TRUE)
 #Initialise key variables
 trialNum <- 48
 pStart <- 1
-pEnd <- 1
+pEnd <- 5
 
 evalNum <- 500
 evalSaveLim <- 500
@@ -67,7 +67,32 @@ for (p in pStart:pEnd) {
   opts <- list("algorithm"="NLOPT_GN_DIRECT",
                "maxeval" = evalNum)
   
-  param <- nloptr(eval_f = LBA_Fit, 
+  #Rough Passes ====
+  param_ST <- nloptr(eval_f = LBA_Fit, 
+                   x0 = startParams,
+                   lb = lower,
+                   ub = upper, 
+                   opt = opts, 
+                   pData = STdata, 
+                   trialNum = trialNum/4)
+  
+  param_SF <- nloptr(eval_f = LBA_Fit, 
+                   x0 = startParams,
+                   lb = lower,
+                   ub = upper, 
+                   opt = opts, 
+                   pData = SFdata, 
+                   trialNum = trialNum/4)
+  
+  param_TT <- nloptr(eval_f = LBA_Fit, 
+                   x0 = startParams,
+                   lb = lower,
+                   ub = upper, 
+                   opt = opts, 
+                   pData = TTdata, 
+                   trialNum = trialNum/4)
+  
+  param_TF <- nloptr(eval_f = LBA_Fit, 
                   x0 = startParams,
                   lb = lower,
                   ub = upper, 
@@ -79,14 +104,46 @@ for (p in pStart:pEnd) {
   opts <- list("algorithm"="NLOPT_GN_DIRECT_L",
                "maxeval" = evalNum)
   
-  param <- nloptr(eval_f = LBA_Fit, 
-                  x0 = param$solution,
+  #Fine Passes ====
+  param_ST <- nloptr(eval_f = LBA_Fit, 
+                     x0 = param_ST$solution,
+                     lb = lower,
+                     ub = upper, 
+                     opt = opts, 
+                     pData = STdata, 
+                     trialNum = trialNum/4)
+  
+  param_SF <- nloptr(eval_f = LBA_Fit, 
+                     x0 = param_SF$solution,
+                     lb = lower,
+                     ub = upper, 
+                     opt = opts, 
+                     pData = SFdata, 
+                     trialNum = trialNum/4)
+  
+  param_TT <- nloptr(eval_f = LBA_Fit, 
+                     x0 = param_TT$solution,
+                     lb = lower,
+                     ub = upper, 
+                     opt = opts, 
+                     pData = TTdata, 
+                     trialNum = trialNum/4)
+  
+  param_TF <- nloptr(eval_f = LBA_Fit, 
+                  x0 = param_TF$solution,
                   lb = lower,
                   ub = upper, 
                   opt = opts, 
                   pData = TFdata, 
                   trialNum = trialNum/4)
   
-  Threat_False[p, 1:15] <- param$solution
-  Threat_False[p, 16] <- param$objective
+  #Write parameters into arrays
+  Safe_True[p, 1:15] <- param_ST$solution
+  Safe_True[p, 16] <- param_ST$objective
+  Safe_False[p, 1:15] <- param_SF$solution
+  Safe_False[p, 16] <- param_SF$objective
+  Threat_True[p, 1:15] <- param_TT$solution
+  Threat_True[p, 16] <- param_TT$objective
+  Threat_False[p, 1:15] <- param_TF$solution
+  Threat_False[p, 16] <- param_TF$objective
 }

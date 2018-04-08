@@ -13,7 +13,7 @@ readData <- function(participant) {
   
   #Create the data frame of relevant variables
   rawData <- tibble(Veracity = tempData$V4, ShockCue = tempData$V5, Shocked = tempData$V6,
-                     Response = tempData$V10, RT = tempData$V13)
+                     Response = tempData$V10, RT = tempData$V13, Correct = tempData$V12)
   
   #Remove foil trials and trials where the participant was shocked
   rawData <- filter(rawData, Veracity != 3, Shocked != 1)
